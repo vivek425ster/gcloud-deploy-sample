@@ -1,0 +1,20 @@
+name: deploy-cloudrun Unit
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ main ]
+
+jobs:
+  run:
+    - name: Deploy to Cloud Run
+      id: deploy
+      uses: google-github-actions/deploy-cloudrun@main
+      with:
+        service: hello-cloud-run 
+        image: gcr.io/cloudrun/hello
+        credentials: ${{ secrets.GCP_SA_KEY }}
+
+    - name: Use Output
+      run: curl "${{ steps.deploy.outputs.url }}"
