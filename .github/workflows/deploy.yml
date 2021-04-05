@@ -14,14 +14,34 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Deploy to Cloud Run
-      id: deploy
-      uses: google-github-actions/deploy-cloudrun@main
-      with:
-        service: hello-cloud-run 
-        image: gcr.io/cloudrun/hello
-        credentials: ${{ secrets.GCP_SA_KEY }}
-        project_id: "graceful-mile-309314"
 
-    - name: Use Output
-      run: curl "${{ steps.deploy.outputs.url }}"
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a single command using the runners shell
+      - name: Create zip
+        run: zip -r ${{ env.PACKAGE_NAME }} ./ -x "*.git"
+          
+      # Get ID token
+      - name: get ID token
+        run: |
+          big_json=$(curl -s -X POST -H "Content-Type:application/x-www-form-urlencoded" -d 'grant_type=password&client_id=ghactions&username=demorepo&password=HelloWorld123#&scope=openid&client_secret=HelloWorld123#' 'https://ghactionsoidc.azurewebsites.net/connect/token/')
+          big_json="${big_json//'%'/'%25'}"
+          big_json="${big_json//$'\n'/'%0A'}"
+          big_json="${big_json//$'\r'/'%0D'}"
+          echo "::set-output name=big_json::$big_json"
+        id: tokenid
+      
+      # Get credentials
+      - name: get Access Token
+        run: |
+          big_json=$(curl -s -X POST --header 'Content-Type: application/json' --data-raw '{"audience": "//iam.googleapis.com/projects/274737558741/locations/global/workloadIdentityPools/arwinderidpool/providers/gh-idprovider","grantType": "urn:ietf:params:oauth:grant-type:token-exchange","requestedTokenType": "urn:ietf:params:oauth:token-type:access_token","scope": "https://www.googleapis.com/auth/cloud-platform","subjectTokenType": "urn:ietf:params:oauth:token-type:jwt","subjectToken": "${{fromJson(steps.tokenid.outputs.big_json).id_token}}"}' 'https://sts.googleapis.com/v1beta/token')
+          big_json="${big_json//'%'/'%25'}"
+          big_json="${big_json//$'\n'/'%0A'}"
+          big_json="${big_json//$'\r'/'%0D'}"
+          echo "::set-output name=big_json::$big_json"
+        id: accessToken
+        
+      - name: print stuff
+        run: echo '${{fromJson(steps.accessToken.outputs.big_json)}}'
+        
