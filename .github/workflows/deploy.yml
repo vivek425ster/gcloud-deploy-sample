@@ -21,7 +21,7 @@ jobs:
         service: hello-cloud-run 
         image: gcr.io/cloudrun/hello
         credentials: ${{ secrets.GCP_SA_KEY }}
-        project-id: "graceful-mile-309314"
+        project_id: "graceful-mile-309314"
 
     - name: Use Output
       run: curl "${{ steps.deploy.outputs.url }}"
