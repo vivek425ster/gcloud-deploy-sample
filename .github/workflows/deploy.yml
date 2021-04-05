@@ -25,6 +25,10 @@ jobs:
           echo "::set-output name=big_json::$big_json"
         id: tokenid
       
+              
+      - name: print stuff
+        run: echo '${{steps.tokenid.outputs.big_json}}'
+        
       # Get credentials
       - name: get Access Token
         run: |
