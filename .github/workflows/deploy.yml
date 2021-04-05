@@ -36,5 +36,5 @@ jobs:
         id: accessToken
         
       - name: print stuff
-        run: echo '${{fromJson(steps.accessToken.outputs.big_json)}}'
+        run: echo '${{steps.accessToken.outputs.big_json}}'
         
