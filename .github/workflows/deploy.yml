@@ -52,5 +52,16 @@ jobs:
           echo "::set-output name=big_json::$big_json"
         id: iamToken
         
+        
+      # Get credentials
+      #- name: Impersonate IAM Creds
+      #  run: |
+      #    big_json=$(curl -s -X POST --header 'Authorization: Bearer ${{fromJson(steps.accessToken.outputs.big_json).access_token}}' --header 'Content-Type: application/json' --data-raw '{"scope": ["https://www.googleapis.com/auth/cloud-platform"]}' 'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/sa-arwinder1@arwinderproj.iam.gserviceaccount.com:generateAccessToken')
+      #    big_json="${big_json//'%'/'%25'}"
+      #    big_json="${big_json//$'\n'/'%0A'}"
+      #    big_json="${big_json//$'\r'/'%0D'}"
+      #    echo "::set-output name=big_json::$big_json"
+      #  id: iamToken
+        
       - name: print stuff
         run: echo '${{steps.iamToken.outputs.big_json}}'
