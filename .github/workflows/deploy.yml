@@ -54,10 +54,15 @@ jobs:
       
       - name: HTTP Request Action
         uses: fjogeleit/http-request-action@v1.8.0
+        id: request
         with:
           # Request URL
           url: 'https://serviceusage.googleapis.com/v1/projects/arwinderproj/services'
           # Request Method
           method: GET
           # Bearer Authentication Token
-          bearerToken: ${{fromJson(steps.iamToken.outputs.big_json).accessToken}}        
+          bearerToken: ${{fromJson(steps.iamToken.outputs.big_json).accessToken}}
+
+      - name: Show Response
+        run: echo ${{ steps.request.outputs.response }}
+
